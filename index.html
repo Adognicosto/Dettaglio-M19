@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dettaglio M19 - Da Riparare</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .home-button {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .home-button:hover { background: rgba(255,255,255,0.3); }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        
+        .search-container {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .search-box {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto 20px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus { border-color: #f5576c; box-shadow: 0 0 0 3px rgba(245,87,108,0.1); }
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #f5576c;
+            font-size: 20px;
+        }
+        .search-hint {
+            text-align: center;
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        .filters-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filter-select {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .filter-select:focus { border-color: #f5576c; box-shadow: 0 0 0 3px rgba(245,87,108,0.1); }
+        .filter-select:hover { border-color: #f5576c; }
+        
+        .results-info {
+            padding: 20px 30px;
+            background: #ffe5ea;
+            border-bottom: 1px solid #ffb3c1;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .results-info.show { display: flex; }
+        .results-count {
+            font-size: 1.1em;
+            color: #c82333;
+            font-weight: 600;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            background: #f5576c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .btn:hover { background: #e84560; transform: scale(1.05); }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { background: #5a6268; }
+        
+        .active-filters {
+            padding: 15px 30px;
+            background: #fff3cd;
+            border-bottom: 1px solid #ffc107;
+            display: none;
+        }
+        .active-filters.show { display: block; }
+        .filter-tag {
+            display: inline-block;
+            background: #f5576c;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            margin: 3px;
+            font-size: 13px;
+        }
+        .filter-tag .remove {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .filter-tag .remove:hover {
+            transform: scale(1.2);
+            color: #ffdddd;
+        }
+        
+        .table-container {
+            padding: 30px;
+            overflow: auto;
+            max-height: 600px;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            padding: 80px 40px;
+            color: #495057;
+        }
+        .welcome-message .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .welcome-message h2 {
+            font-size: 2em;
+            color: #f5576c;
+            margin-bottom: 15px;
+        }
+        .welcome-message p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .welcome-message .tips {
+            margin-top: 30px;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #f5576c;
+        }
+        .welcome-message .tips h3 {
+            color: #f5576c;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .welcome-message .tips ul {
+            list-style: none;
+            text-align: left;
+            display: inline-block;
+        }
+        .welcome-message .tips li {
+            padding: 8px 0;
+            font-size: 1.05em;
+        }
+        .welcome-message .tips li:before {
+            content: "🔧 ";
+            margin-right: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            display: none;
+        }
+        table.show { display: table; }
+        thead {
+            position: sticky;
+            top: 0;
+            background: #f5576c;
+            color: white;
+            z-index: 10;
+        }
+        th {
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+        tbody tr { transition: all 0.2s ease; }
+        tbody tr:hover {
+            background: #fff5f7;
+            transform: scale(1.002);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .numero-cell {
+            background: #e3f2fd;
+            font-weight: 700;
+            color: #1565c0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .categoria-cell {
+            font-weight: 600;
+            color: #495057;
+        }
+        .difetto-cell {
+            background: #ffebee;
+            color: #c62828;
+            font-size: 12px;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+        .serial-cell {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            font-size: 12px;
+        }
+        .no-results {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+            display: none;
+        }
+        .no-results.show { display: block; }
+        
+        @media (max-width: 768px) {
+            .home-button { position: static; transform: none; margin-bottom: 10px; }
+            .filters-container { grid-template-columns: 1fr; }
+            .table-container { padding: 15px; }
+            th, td { padding: 8px 6px; font-size: 11px; }
+            .welcome-message { padding: 40px 20px; }
+            .welcome-message h2 { font-size: 1.5em; }
+            .welcome-message p { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="home-button">🏠 Home</a>
+            <h1>🔧 Dettaglio M19</h1>
+            <p>Dispositivi da riparare - Gestione interventi</p>
+            <p style="font-size: 0.95em; margin-top: 10px; opacity: 0.85;">25 dispositivi in riparazione</p>
+        </div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="Cerca per numero, categoria, modello, seriale o difetto..." autocomplete="off">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="search-hint">💡 Inizia a digitare o usa i filtri per visualizzare i dispositivi</div>
+            
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label class="filter-label">Categoria</label>
+                    <select id="filterCategoria" class="filter-select"><option value="">Tutte</option></select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Modello</label>
+                    <select id="filterModello" class="filter-select"><option value="">Tutti</option></select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Difetto</label>
+                    <select id="filterDifetto" class="filter-select"><option value="">Tutti</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="active-filters" id="activeFilters">
+            <strong>Filtri attivi:</strong> <span id="filterTags"></span>
+        </div>
+
+        <div class="results-info" id="resultsInfo">
+            <span class="results-count" id="resultsCount"></span>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="resetBtn">Reset Filtri</button>
+                <button class="btn" onclick="exportCSV()">Esporta CSV</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="welcome-message" id="welcomeMsg">
+                <div class="icon">🔧</div>
+                <h2>Dettaglio M19 - Dispositivi da Riparare</h2>
+                <p>Utilizza la barra di ricerca o i filtri per trovare i dispositivi</p>
+                <div class="tips">
+                    <h3>💡 Informazioni disponibili:</h3>
+                    <ul>
+                        <li>Numero progressivo dispositivo</li>
+                        <li>Categoria prodotto (MacBook, iPad, ecc.)</li>
+                        <li>Modello specifico con codice</li>
+                        <li>Specifiche tecniche complete</li>
+                        <li>Numero di serie univoco</li>
+                        <li>Difetto rilevato e intervento necessario</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">N°</th>
+                        <th style="width: 12%;">CATEGORIA</th>
+                        <th style="width: 20%;">MODELLO</th>
+                        <th style="width: 18%;">SPECIFICHE</th>
+                        <th style="width: 12%;">SERIALE</th>
+                        <th style="width: 33%;">DIFETTO RILEVATO</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            
+            <div id="noResults" class="no-results">
+                <h3>Nessun dispositivo trovato</h3>
+                <p>Prova a modificare i filtri o i termini di ricerca</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+const DATA = [
+  {
+    "N°": 4,
+    "Categoria": "iPad Air",
+    "Modello": "iPad Air (5th Gen)",
+    "Specifiche Tecniche": "Wi-Fi, 64GB, Purple",
+    "Numero Seriale": "GWX677R1YH",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 5,
+    "Categoria": "iPad Air",
+    "Modello": "iPad Air (5th Gen)",
+    "Specifiche Tecniche": "Wi-Fi, 64GB, Purple",
+    "Numero Seriale": "QV36TV4V56",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 8,
+    "Categoria": "iPad mini",
+    "Modello": "iPad mini (6th Gen)",
+    "Specifiche Tecniche": "Wi-Fi, 64GB, Pink",
+    "Numero Seriale": "H2W204QXNG",
+    "Difetto Rilevato": "LCD"
+  },
+  {
+    "N°": 1,
+    "Categoria": "iPad Pro",
+    "Modello": "iPad Pro 12.9\" (5th Gen)",
+    "Specifiche Tecniche": "Wi-Fi, 128GB, Space Gray",
+    "Numero Seriale": "L1CFQ459J0",
+    "Difetto Rilevato": "USB C PORT"
+  },
+  {
+    "N°": 7,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (M1, 2020) Gold [A2337]",
+    "Specifiche Tecniche": "8C CPU, 8C GPU, 8GB RAM, 512GB SSD",
+    "Numero Seriale": "C02FF62QQ6LD",
+    "Difetto Rilevato": "LOWER PART OF SCREEN DAMAGED"
+  },
+  {
+    "N°": 2,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (M1, 2020) Silver [A2337]",
+    "Specifiche Tecniche": "8C CPU, 7C GPU, 8GB RAM, 256GB SSD",
+    "Numero Seriale": "C02DM9APQ6L7",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 19,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (M1, 2020) Silver [A2337]",
+    "Specifiche Tecniche": "8C CPU, 7C GPU, 8GB RAM, 256GB SSD",
+    "Numero Seriale": "FVFJ70EJ1WFY",
+    "Difetto Rilevato": "BACKLIGHT PROBLEM"
+  },
+  {
+    "N°": 9,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (M1, 2020) Space Gray [A2337]",
+    "Specifiche Tecniche": "8C CPU, 7C GPU, 8GB RAM, 256GB SSD",
+    "Numero Seriale": "C02GXL5RQ6L4",
+    "Difetto Rilevato": "CHANGE/CLEAN KEYCAPS+LCD"
+  },
+  {
+    "N°": 11,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (M1, 2020) Space Gray [A2337]",
+    "Specifiche Tecniche": "8C CPU, 8C GPU, 8GB RAM, 512GB SSD",
+    "Numero Seriale": "C02H34BBQ6L5",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 15,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (M1, 2020) Space Gray [A2337]",
+    "Specifiche Tecniche": "8C CPU, 7C GPU, 8GB RAM, 256GB SSD",
+    "Numero Seriale": "FVFGJLDPQ6L4",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 20,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (M1, 2020) Space Gray [A2337]",
+    "Specifiche Tecniche": "8C CPU, 7C GPU, 8GB RAM, 256GB SSD",
+    "Numero Seriale": "FVFJH8QXQ6L4",
+    "Difetto Rilevato": "ABNORMAL CLICK TRACKPAD+ KEYBOARD NEED TO BE CLEANED"
+  },
+  {
+    "N°": 10,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (Retina, 13\", 2020) Space Gray [A2179]",
+    "Specifiche Tecniche": "QC i5, 8GB RAM, 256GB SSD",
+    "Numero Seriale": "FVFD90JUM6KK",
+    "Difetto Rilevato": "CHANGE FAN+CHECK BATTERY IF NEED TO CHANGE"
+  },
+  {
+    "N°": 16,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (Retina, 13\", 2020) Space Gray [A2179]",
+    "Specifiche Tecniche": "1.1GHz QC i5, 8GB RAM, 512GB SSD",
+    "Numero Seriale": "FVFDJ8K2M6KG",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 22,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (Retina, 13\", 2020) Space Gray [A2179]",
+    "Specifiche Tecniche": "1.1GHz QC i5, 8GB RAM, 512GB SSD",
+    "Numero Seriale": "FVFDJGDAM6KG",
+    "Difetto Rilevato": "DAMAGED SCREEN + BATTERY IS GOOD CAN BE PULLED OFF"
+  },
+  {
+    "N°": 23,
+    "Categoria": "MacBook Air",
+    "Modello": "MacBook Air (Retina, 13\", 2020) Space Gray [A2179]",
+    "Specifiche Tecniche": "1.1GHz QC i5, 16GB RAM, 512GB SSD",
+    "Numero Seriale": "FVFDM00DM6KK",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 3,
+    "Categoria": "MacBook Pro 13\"",
+    "Modello": "MacBook Pro 13\" (2020, 2 Thunderbolt 3) Silver [A2289]",
+    "Specifiche Tecniche": "1.4GHz QC i5, 8GB RAM, 512GB SSD",
+    "Numero Seriale": "C02CN370P3Y0",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 18,
+    "Categoria": "MacBook Pro 13\"",
+    "Modello": "MacBook Pro 13\" (2020, 2 Thunderbolt 3) Silver [A2289]",
+    "Specifiche Tecniche": "Silver",
+    "Numero Seriale": "C02DL0ZFP3YX",
+    "Difetto Rilevato": "TRACKPAD DAMAGED + BATTERY"
+  },
+  {
+    "N°": 17,
+    "Categoria": "MacBook Pro 13\"",
+    "Modello": "MacBook Pro 13\" (2020, 4 Thunderbolt 3) Space Gray [A2251]",
+    "Specifiche Tecniche": "2.0GHz QC i5, 16GB RAM, 512GB SSD",
+    "Numero Seriale": "C02G10P0ML7L",
+    "Difetto Rilevato": "BATTERY"
+  },
+  {
+    "N°": 6,
+    "Categoria": "MacBook Pro 16\"",
+    "Modello": "MacBook Pro 16\" (2019) Silver [A2141]",
+    "Specifiche Tecniche": "2.3GHz 8C i9, 16GB RAM, 1TB SSD",
+    "Numero Seriale": "C02ZJ32LMD6Q",
+    "Difetto Rilevato": "BATTERY+THERMAL PASTE"
+  },
+  {
+    "N°": 12,
+    "Categoria": "MacBook Pro 16\"",
+    "Modello": "MacBook Pro 16\" (2019) Space Gray [A2141]",
+    "Specifiche Tecniche": "512GB SSD",
+    "Numero Seriale": "C02C90G0MD6T",
+    "Difetto Rilevato": "KERNEL PROBLEM+BATTERY+THERMAL PASTE"
+  },
+  {
+    "N°": 21,
+    "Categoria": "MacBook Pro 16\"",
+    "Modello": "MacBook Pro 16\" (2019) Space Gray [A2141]",
+    "Specifiche Tecniche": "Space Gray",
+    "Numero Seriale": "C02DW5VUMD6T",
+    "Difetto Rilevato": "BATTERY+ THERMAL PASTE"
+  },
+  {
+    "N°": 14,
+    "Categoria": "MacBook Pro 16\"",
+    "Modello": "MacBook Pro 16\" (2023)",
+    "Specifiche Tecniche": "12C CPU, 19C GPU, 16GB RAM, 512GB SSD",
+    "Numero Seriale": "QJFKGQYJC0",
+    "Difetto Rilevato": "SCREEN"
+  },
+  {
+    "N°": 24,
+    "Categoria": "Altro",
+    "Modello": "NB HP 250 G8 i3-1115G4 8GB 256GB W11P IT",
+    "Specifiche Tecniche": "",
+    "Numero Seriale": "cnd1323gd6",
+    "Difetto Rilevato": "INSTALL OS CORRECTLY WITH PROPER DRIVER"
+  },
+  {
+    "N°": 25,
+    "Categoria": "MacBook Pro 13\"",
+    "Modello": "MacBook Air (13-inch M2 2022) [A2681]",
+    "Specifiche Tecniche": "8C CPU 10C GPU 8GB 512GB",
+    "Numero Seriale": "d2pm43lfxk",
+    "Difetto Rilevato": "GOOD BLUE SCREEN + CHASSIS WITH KEYBOARD PROBLEM"
+  },
+  {
+    "N°": 26,
+    "Categoria": "MacBook Pro 13\"",
+    "Modello": "MacBook Air (M1, 2020) Space Gray [A2337]",
+    "Specifiche Tecniche": "7GPU 16GB 256GB",
+    "Numero Seriale": "FVFfj3RTQ6LR",
+    "Difetto Rilevato": "GOOD SCREEN AND CHASSIS - MAINBOARD NOT BOOT ON"
+  }
+];
+
+let allData = DATA;
+
+function highlight(text, terms) {
+    if (!terms || !text) return text;
+    let result = String(text);
+    terms.forEach(term => {
+        const re = new RegExp('(' + term + ')', 'gi');
+        result = result.replace(re, '<span class="highlight">$1</span>');
+    });
+    return result;
+}
+
+function populateFilters() {
+    const cats = [...new Set(allData.map(i => i.Categoria).filter(v => v))].sort();
+    const models = [...new Set(allData.map(i => i.Modello).filter(v => v))].sort();
+    const difetti = [...new Set(allData.map(i => i['Difetto Rilevato']).filter(v => v))].sort();
+    
+    const fillSelect = (id, values) => {
+        const sel = document.getElementById(id);
+        values.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v;
+            opt.textContent = v;
+            sel.appendChild(opt);
+        });
+    };
+    
+    fillSelect('filterCategoria', cats);
+    fillSelect('filterModello', models);
+    fillSelect('filterDifetto', difetti);
+}
+
+function removeFilter(key) {
+    const filterMap = {
+        'search': 'searchInput',
+        'categoria': 'filterCategoria',
+        'modello': 'filterModello',
+        'difetto': 'filterDifetto'
+    };
+    document.getElementById(filterMap[key]).value = '';
+    render();
+}
+
+function render() {
+    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+    const words = search ? search.split(/\s+/).filter(w => w) : [];
+    
+    const fCat = document.getElementById('filterCategoria').value;
+    const fMod = document.getElementById('filterModello').value;
+    const fDif = document.getElementById('filterDifetto').value;
+    
+    const hasFilters = search || fCat || fMod || fDif;
+    
+    const welcomeMsg = document.getElementById('welcomeMsg');
+    const resultsInfo = document.getElementById('resultsInfo');
+    const table = document.getElementById('resultsTable');
+    const noResults = document.getElementById('noResults');
+    const activeFilters = document.getElementById('activeFilters');
+    
+    if (!hasFilters) {
+        welcomeMsg.style.display = 'block';
+        resultsInfo.classList.remove('show');
+        table.classList.remove('show');
+        noResults.classList.remove('show');
+        activeFilters.classList.remove('show');
+        return;
+    }
+    
+    welcomeMsg.style.display = 'none';
+    resultsInfo.classList.add('show');
+    
+    const filteredData = allData.filter(item => {
+        let match = true;
+        
+        if (words.length > 0) {
+            const text = [
+                String(item['N°'] || ''),
+                item.Categoria || '',
+                item.Modello || '',
+                item['Specifiche Tecniche'] || '',
+                item['Numero Seriale'] || '',
+                item['Difetto Rilevato'] || ''
+            ].join(' ').toLowerCase();
+            match = words.every(w => text.includes(w));
+        }
+        
+        if (match && fCat && item.Categoria !== fCat) match = false;
+        if (match && fMod && item.Modello !== fMod) match = false;
+        if (match && fDif && item['Difetto Rilevato'] !== fDif) match = false;
+        
+        return match;
+    });
+    
+    const count = document.getElementById('resultsCount');
+    const tags = document.getElementById('filterTags');
+    
+    count.textContent = `Trovati: ${filteredData.length} dispositivi`;
+    
+    const activeTags = [];
+    if (search) activeTags.push({ label: 'Ricerca', value: search, key: 'search' });
+    if (fCat) activeTags.push({ label: 'Categoria', value: fCat, key: 'categoria' });
+    if (fMod) activeTags.push({ label: 'Modello', value: fMod, key: 'modello' });
+    if (fDif) activeTags.push({ label: 'Difetto', value: fDif, key: 'difetto' });
+    
+    if (activeTags.length > 0) {
+        activeFilters.classList.add('show');
+        tags.innerHTML = activeTags.map(tag => 
+            `<span class="filter-tag">${tag.label}: ${tag.value} <span class="remove" onclick="removeFilter('${tag.key}')">×</span></span>`
+        ).join('');
+    } else {
+        activeFilters.classList.remove('show');
+    }
+    
+    if (filteredData.length === 0) {
+        table.classList.remove('show');
+        noResults.classList.add('show');
+        return;
+    }
+    
+    noResults.classList.remove('show');
+    table.classList.add('show');
+    
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = filteredData.map((item, i) => {
+        return `<tr>
+            <td class="numero-cell">${highlight(String(item['N°'] || ''), words)}</td>
+            <td class="categoria-cell">${highlight(item.Categoria || '', words)}</td>
+            <td>${highlight(item.Modello || '', words)}</td>
+            <td><small>${highlight(item['Specifiche Tecniche'] || '-', words)}</small></td>
+            <td class="serial-cell">${highlight(item['Numero Seriale'] || '', words)}</td>
+            <td class="difetto-cell">${highlight(item['Difetto Rilevato'] || '', words)}</td>
+        </tr>`;
+    }).join('');
+}
+
+function reset() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterCategoria').value = '';
+    document.getElementById('filterModello').value = '';
+    document.getElementById('filterDifetto').value = '';
+    render();
+}
+
+function exportCSV() {
+    const search = document.getElementById('searchInput').value.toLowerCase().trim();
+    const words = search ? search.split(/\s+/).filter(w => w) : [];
+    const fCat = document.getElementById('filterCategoria').value;
+    const fMod = document.getElementById('filterModello').value;
+    const fDif = document.getElementById('filterDifetto').value;
+    
+    const filteredData = allData.filter(item => {
+        let match = true;
+        if (words.length > 0) {
+            const text = [String(item['N°'] || ''), item.Categoria || '', item.Modello || '', item['Specifiche Tecniche'] || '', item['Numero Seriale'] || '', item['Difetto Rilevato'] || ''].join(' ').toLowerCase();
+            match = words.every(w => text.includes(w));
+        }
+        if (match && fCat && item.Categoria !== fCat) match = false;
+        if (match && fMod && item.Modello !== fMod) match = false;
+        if (match && fDif && item['Difetto Rilevato'] !== fDif) match = false;
+        return match;
+    });
+    
+    const headers = ['N°','Categoria','Modello','Specifiche Tecniche','Numero Seriale','Difetto Rilevato'];
+    let csv = headers.join(',') + '\n';
+    filteredData.forEach(item => {
+        const row = headers.map(h => '"' + (item[h] || '') + '"');
+        csv += row.join(',') + '\n';
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'dettaglio_m19.csv';
+    link.click();
+}
+
+window.onload = function() {
+    populateFilters();
+    
+    document.getElementById('searchInput').addEventListener('input', render);
+    document.getElementById('filterCategoria').addEventListener('change', render);
+    document.getElementById('filterModello').addEventListener('change', render);
+    document.getElementById('filterDifetto').addEventListener('change', render);
+    document.getElementById('resetBtn').addEventListener('click', reset);
+};
+    </script>
+</body>
+</html>
